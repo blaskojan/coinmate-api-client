@@ -1,0 +1,1 @@
+HTTP Go client to communicate with [Coinmate.io API](https://coinmate.docs.apiary.io/#)

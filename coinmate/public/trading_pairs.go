@@ -11,17 +11,17 @@ const (
 	tradingPairsEndpoint = "/tradingPairs"
 )
 
-type TraidingPairs struct {
+type TradingPairs struct {
 	Client coinmate.ClientInterface
 }
 
-type TraidingPairsResponse struct {
+type TradingPairsResponse struct {
 	Error        bool
 	ErrorMessage string
-	Data         []TraidingPairsData
+	Data         []TradingPairsData
 }
 
-type TraidingPairsData struct {
+type TradingPairsData struct {
 	Name                              string  `json:"name"`
 	FirstCurrency                     string  `json:"firstCurrency"`
 	SecondCurrency                    string  `json:"secondCurrency"`
@@ -34,15 +34,15 @@ type TraidingPairsData struct {
 }
 
 // Trading pairs endpoint
-func (o *OrderBook) GetTradingPairs() (TraidingPairsResponse, error) {
-	tpr := TraidingPairsResponse{}
+func (t *TradingPairs) GetTradingPairs() (TradingPairsResponse, error) {
+	tpr := TradingPairsResponse{}
 
 	r := coinmate.Request{
 		HTTPMethod: http.MethodGet,
-		URL:        o.Client.GetBaseUrl() + tradingPairsEndpoint,
+		URL:        t.Client.GetBaseUrl() + tradingPairsEndpoint,
 		Body:       nil,
 	}
-	response, err := o.Client.MakePublicRequest(r)
+	response, err := t.Client.MakePublicRequest(r)
 	if err != nil || response.StatusCode != http.StatusOK {
 		fmt.Println("Coinmate error: " + string(response.Body))
 		return tpr, err

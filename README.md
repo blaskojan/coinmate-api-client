@@ -76,6 +76,65 @@ balances := &secure.Balances{Client: client}
 balanceData, err := balances.GetBalances()
 ```
 
+## Running tests
+
+You can run tests locally (requires Go 1.25+) or inside Docker.
+
+### Local
+
+- **Quick run:**
+
+```bash
+make test
+```
+
+- **With coverage report:**
+
+```bash
+make test-coverage
+# Opens HTML reports in coverage/*.html
+```
+
+- **Direct Go command:**
+
+```bash
+go test -v ./...
+```
+
+- **Helper script (detailed, per-package coverage):**
+
+```bash
+./run_tests_simple.sh
+```
+
+### Docker
+
+- **One-shot tests in container:**
+
+```bash
+make docker-test
+```
+
+- **Quick tests (no coverage HTML):**
+
+```bash
+make quick-test
+```
+
+- **Alternative Docker test with coverage:**
+
+```bash
+make test-docker
+```
+
+- **Helper script (Docker, per-package coverage):**
+
+```bash
+./run_tests_docker_simple.sh
+```
+
+Coverage HTML reports (when enabled) are written to `coverage/client.html`, `coverage/public.html`, and `coverage/secure.html`.
+
 ## Contributing
 
 This client is incomplete compared to the official API documentation. Contributions to add missing endpoints are welcome.

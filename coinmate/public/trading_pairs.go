@@ -43,15 +43,16 @@ func (t *TradingPairs) GetTradingPairs() (TradingPairsResponse, error) {
 		Body:       nil,
 	}
 	response, err := t.Client.MakePublicRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return tpr, err
+	if err != nil {
+		return tpr, fmt.Errorf("trading pairs request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return tpr, fmt.Errorf("trading pairs request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &tpr)
 	if err != nil {
-		fmt.Println(err)
-		return tpr, err
+		return tpr, fmt.Errorf("failed to decode trading pairs response: %w", err)
 	}
 
 	return tpr, err

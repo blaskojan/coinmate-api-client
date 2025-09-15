@@ -177,15 +177,10 @@ func TestGetTransactionsHTTPError(t *testing.T) {
 	mockClient := &MockClient{response: mockResponse}
 	transactions := &Transactions{Client: mockClient}
 
-	response, err := transactions.GetTransactions("BTC_EUR", 60)
+	_, err := transactions.GetTransactions("BTC_EUR", 60)
 
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Should return empty response when HTTP status is not OK
-	if response.Error != false {
-		t.Error("Expected default error state")
+	if err == nil {
+		t.Errorf("Expected error for non-200 response")
 	}
 }
 
@@ -274,15 +269,10 @@ func TestGetTransactionsEmptyCurrencyPair(t *testing.T) {
 	mockClient := &MockClient{response: &coinmate.Response{}}
 	transactions := &Transactions{Client: mockClient}
 
-	response, err := transactions.GetTransactions("", 60)
+	_, err := transactions.GetTransactions("", 60)
 
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Should handle empty currency pair gracefully
-	if response.Error != false {
-		t.Error("Expected default error state")
+	if err == nil {
+		t.Error("Expected error for empty currency pair")
 	}
 }
 
@@ -332,4 +322,3 @@ func TestTransactionsDataStructure(t *testing.T) {
 		t.Errorf("Expected trade type to be %s, got %s", data.TradeType, unmarshaledData.TradeType)
 	}
 }
-

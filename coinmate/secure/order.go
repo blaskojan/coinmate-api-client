@@ -37,9 +37,9 @@ type Order struct {
 
 // Order history response
 type OrderHistoryResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         []OrderHistoryData
+	Error        bool               `json:"error"`
+	ErrorMessage string             `json:"errorMessage"`
+	Data         []OrderHistoryData `json:"data"`
 }
 
 // Order history data
@@ -58,9 +58,9 @@ type OrderHistoryData struct {
 
 // Open orders history response
 type OpenOrdersResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         []OpenOrdersData
+	Error        bool             `json:"error"`
+	ErrorMessage string           `json:"errorMessage"`
+	Data         []OpenOrdersData `json:"data"`
 }
 
 // Open orders data
@@ -78,16 +78,16 @@ type OpenOrdersData struct {
 
 // Cancel order
 type CancelOrderResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         bool
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"errorMessage"`
+	Data         bool   `json:"data"`
 }
 
 // Cancel order with info response
 type CancelOrderWithInfoResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         CancelOrderWithInfoData
+	Error        bool                    `json:"error"`
+	ErrorMessage string                  `json:"errorMessage"`
+	Data         CancelOrderWithInfoData `json:"data"`
 }
 
 // Cancel order info data
@@ -98,10 +98,11 @@ type CancelOrderWithInfoData struct {
 
 // Buy limit response
 type BuyLimitResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         uint64
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"errorMessage"`
+	Data         uint64 `json:"data"`
 }
+
 type BuyLimit struct {
 	Error        bool
 	ErrorMessage string
@@ -110,10 +111,11 @@ type BuyLimit struct {
 
 // Sell limit response
 type SellLimitResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         uint64
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"errorMessage"`
+	Data         uint64 `json:"data"`
 }
+
 type SellLimit struct {
 	Error        bool
 	ErrorMessage string
@@ -122,16 +124,17 @@ type SellLimit struct {
 
 // Buy instant response
 type BuyInstantResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         uint64
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"errorMessage"`
+	Data         uint64 `json:"data"`
 }
 
 type BuySell struct {
-	Error        bool
-	ErrorMessage string
-	Data         uint64
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"errorMessage"`
+	Data         uint64 `json:"data"`
 }
+
 type BuyAndSellResponse struct {
 	Error        bool
 	ErrorMessage string
@@ -164,16 +167,16 @@ func (o *Order) GetHistory(currencyPair string, limit int64) (OrderHistoryRespon
 		Body:       o.Client.GetRequestBody(ap),
 	}
 	response, err := o.Client.MakeSecureRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		fmt.Println(err)
-		return orderHistoryResponse, err
+	if err != nil {
+		return orderHistoryResponse, fmt.Errorf("order history request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return orderHistoryResponse, fmt.Errorf("order history request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &orderHistoryResponse)
 	if err != nil {
-		fmt.Println(err)
-		return orderHistoryResponse, err
+		return orderHistoryResponse, fmt.Errorf("failed to decode order history response: %w", err)
 	}
 
 	return orderHistoryResponse, err
@@ -202,42 +205,43 @@ func (o *Order) GetOpenOrders(currencyPair string) (OpenOrdersResponse, error) {
 		Body:       o.Client.GetRequestBody(ap),
 	}
 	response, err := o.Client.MakeSecureRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return openOrdersResponse, err
+	if err != nil {
+		return openOrdersResponse, fmt.Errorf("open orders request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return openOrdersResponse, fmt.Errorf("open orders request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &openOrdersResponse)
 	if err != nil {
-		fmt.Println(err)
-		return openOrdersResponse, err
+		return openOrdersResponse, fmt.Errorf("failed to decode open orders response: %w", err)
 	}
 
 	return openOrdersResponse, err
 }
 
 // Buy limit
-func (o *Order) BuyLimit(amount, price, stopPrice float64, currencyPair string, hidden, immediateOrCancel bool, clientOrderId uint64) (BuyLimit, error) {
+func (o *Order) BuyLimit(amount, price, stopPrice float64, currencyPair string, hidden, immediateOrCancel bool, clientOrderId uint64) (SellLimit, error) {
 	buyLimitResponse := BuyLimitResponse{}
-	buyLimit := BuyLimit{}
+	sellLimit := SellLimit{}
 
 	response, err := limitOrders(o, amount, price, currencyPair, buyLimitOrderEndpoint, stopPrice, hidden, immediateOrCancel, clientOrderId)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println(response)
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return buyLimit, err
+	if err != nil {
+		return sellLimit, fmt.Errorf("buy limit request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return sellLimit, fmt.Errorf("buy limit request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 	err = json.Unmarshal(response.Body, &buyLimitResponse)
 	if err != nil {
-		fmt.Println(err)
-		return buyLimit, err
+		return sellLimit, fmt.Errorf("failed to decode buy limit response: %w", err)
 	}
 
-	buyLimit.Error = buyLimitResponse.Error
-	buyLimit.ErrorMessage = buyLimitResponse.ErrorMessage
-	buyLimit.OrderId = buyLimitResponse.Data
+	sellLimit.Error = buyLimitResponse.Error
+	sellLimit.ErrorMessage = buyLimitResponse.ErrorMessage
+	sellLimit.OrderId = buyLimitResponse.Data
 
-	return buyLimit, err
+	return sellLimit, err
 }
 
 // Sell limit
@@ -246,15 +250,15 @@ func (o *Order) SellLimit(amount, price, stopPrice float64, currencyPair string,
 	sellLimit := SellLimit{}
 
 	response, err := limitOrders(o, amount, price, currencyPair, sellLimitOrderEndpoint, stopPrice, hidden, immediateOrCancel, clientOrderId)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println(response)
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return sellLimit, err
+	if err != nil {
+		return sellLimit, fmt.Errorf("sell limit request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return sellLimit, fmt.Errorf("sell limit request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 	err = json.Unmarshal(response.Body, &sellLimitResponse)
 	if err != nil {
-		fmt.Println(err)
-		return sellLimit, err
+		return sellLimit, fmt.Errorf("failed to decode sell limit response: %w", err)
 	}
 
 	sellLimit.Error = sellLimitResponse.Error
@@ -279,15 +283,16 @@ func (o *Order) CancelOrder(orderId uint64) (CancelOrderResponse, error) {
 	cancelOrderResponse := CancelOrderResponse{}
 
 	response, err := cancelOrderRequest(o, cancelOrderEndpoint, orderId)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return cancelOrderResponse, err
+	if err != nil {
+		return cancelOrderResponse, fmt.Errorf("cancel order request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return cancelOrderResponse, fmt.Errorf("cancel order request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &cancelOrderResponse)
 	if err != nil {
-		fmt.Println(err)
-		return cancelOrderResponse, err
+		return cancelOrderResponse, fmt.Errorf("failed to decode cancel order response: %w", err)
 	}
 
 	return cancelOrderResponse, err
@@ -298,15 +303,16 @@ func (o *Order) CancelOrderWithInfo(orderId uint64) (CancelOrderWithInfoResponse
 	cancelOrderWithInfoResponse := CancelOrderWithInfoResponse{}
 
 	response, err := cancelOrderRequest(o, cancelOrderWithInfoEndpoint, orderId)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return cancelOrderWithInfoResponse, err
+	if err != nil {
+		return cancelOrderWithInfoResponse, fmt.Errorf("cancel order with info request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return cancelOrderWithInfoResponse, fmt.Errorf("cancel order with info request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &cancelOrderWithInfoResponse)
 	if err != nil {
-		fmt.Println(err)
-		return cancelOrderWithInfoResponse, err
+		return cancelOrderWithInfoResponse, fmt.Errorf("failed to decode cancel order with info response: %w", err)
 	}
 
 	return cancelOrderWithInfoResponse, err
@@ -318,8 +324,6 @@ func (o *Order) CancelOrderWithInfo(orderId uint64) (CancelOrderWithInfoResponse
 func limitOrders(o *Order, amount float64, price float64, currencyPair, endpoint string, stopPrice float64, hidden bool, immediateOrCancel bool, clientOrderId uint64) (coinmate.Response, error) {
 	// URL compose
 	u, _ := url.Parse(o.Client.GetBaseUrl() + endpoint)
-	//q := u.Query()
-	//u.RawQuery = q.Encode()
 	ap := make(map[string]string)
 	ap[amountParamName] = strconv.FormatFloat(amount, 'f', 2, 64)
 	ap[priceParamName] = strconv.FormatFloat(price, 'f', 2, 64)
@@ -366,15 +370,15 @@ func buySellInstantRequest(o *Order, endpoint string, total float64, currencyPai
 		Body:       o.Client.GetRequestBody(ap),
 	}
 	response, err := o.Client.MakeSecureRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println(response)
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return basr, err
+	if err != nil {
+		return basr, fmt.Errorf("%s request failed: %w", endpoint, err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return basr, fmt.Errorf("%s request failed: status=%d body=%s", endpoint, response.StatusCode, string(response.Body))
 	}
 	err = json.Unmarshal(response.Body, &bir)
 	if err != nil {
-		fmt.Println(err)
-		return basr, err
+		return basr, fmt.Errorf("failed to decode %s response: %w", endpoint, err)
 	}
 
 	basr.Error = bir.Error

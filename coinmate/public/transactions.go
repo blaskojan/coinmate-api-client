@@ -38,10 +38,14 @@ type TransactionsData struct {
 func (t *Transactions) GetTransactions(currencyPair string, minutesIntoHistory uint64) (TransactionsResponse, error) {
 	transactionsResponse := TransactionsResponse{}
 
+	if currencyPair == "" {
+		return transactionsResponse, fmt.Errorf("currencyPair must not be empty")
+	}
+
 	// URL compose
 	u, err := url.Parse(t.Client.GetBaseUrl() + transactionsEndpoint)
 	if err != nil {
-		return transactionsResponse, err
+		return transactionsResponse, fmt.Errorf("failed to parse transactions URL: %w", err)
 	}
 	q := u.Query()
 	q.Set(currencyPairParamName, currencyPair)
@@ -54,15 +58,16 @@ func (t *Transactions) GetTransactions(currencyPair string, minutesIntoHistory u
 		Body:       nil,
 	}
 	response, err := t.Client.MakePublicRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return transactionsResponse, err
+	if err != nil {
+		return transactionsResponse, fmt.Errorf("transactions request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return transactionsResponse, fmt.Errorf("transactions request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &transactionsResponse)
 	if err != nil {
-		fmt.Println(err)
-		return transactionsResponse, err
+		return transactionsResponse, fmt.Errorf("failed to decode transactions response: %w", err)
 	}
 
 	return transactionsResponse, err

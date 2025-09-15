@@ -54,10 +54,10 @@ HTTP Go client to communicate with [Coinmate.io API](https://coinmate.docs.apiar
 
 ## Known Issues
 
-1. **Missing error handling**: Some endpoints lack proper error handling
-2. **Inconsistent response structures**: Some responses don't match API documentation
-3. **Missing request validation**: No validation for required parameters
-4. **Hardcoded timeout**: 2-second timeout might be insufficient
+1. ~~Incomplete error handling~~: Errors are now wrapped with context across endpoints.
+2. ~~Response struct mismatches~~: Response structs now include JSON tags for parity with the API.
+3. ~~Missing input validation~~: Basic input validation added for public endpoints and order requests.
+4. **Hardcoded HTTP timeout**: The client uses a fixed 2s timeout; make this configurable.
 
 ## Usage
 

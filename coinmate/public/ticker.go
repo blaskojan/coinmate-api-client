@@ -34,21 +34,26 @@ type TickerData struct {
 func (t *Ticker) GetTicker(currencyPair string) (TickerResponse, error) {
 	tickerResponse := TickerResponse{}
 
+	if currencyPair == "" {
+		return tickerResponse, fmt.Errorf("currencyPair must not be empty")
+	}
+
 	r := coinmate.Request{
 		HTTPMethod: http.MethodGet,
 		URL:        t.Client.GetBaseUrl() + "/ticker?currencyPair=" + currencyPair,
 		Body:       nil,
 	}
 	response, err := t.Client.MakePublicRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return tickerResponse, err
+	if err != nil {
+		return tickerResponse, fmt.Errorf("ticker request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return tickerResponse, fmt.Errorf("ticker request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &tickerResponse)
 	if err != nil {
-		fmt.Println(err)
-		return tickerResponse, err
+		return tickerResponse, fmt.Errorf("failed to decode ticker response: %w", err)
 	}
 
 	return tickerResponse, err

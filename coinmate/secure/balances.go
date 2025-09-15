@@ -15,9 +15,9 @@ type Balances struct {
 
 // Order book response
 type BalancesResponse struct {
-	Error        bool
-	ErrorMessage string
-	Data         map[string]BalanceCurrency
+	Error        bool                       `json:"error"`
+	ErrorMessage string                     `json:"errorMessage"`
+	Data         map[string]BalanceCurrency `json:"data"`
 }
 
 // Balance currency data
@@ -40,15 +40,16 @@ func (b *Balances) GetBalances() (BalancesResponse, error) {
 		Body:       b.Client.GetRequestBody(ap),
 	}
 	response, err := b.Client.MakeSecureRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return balancesResponse, err
+	if err != nil {
+		return balancesResponse, fmt.Errorf("balances request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return balancesResponse, fmt.Errorf("balances request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &balancesResponse)
 	if err != nil {
-		fmt.Println(err)
-		return balancesResponse, err
+		return balancesResponse, fmt.Errorf("failed to decode balances response: %w", err)
 	}
 
 	return balancesResponse, err

@@ -41,10 +41,14 @@ type OrderBookAsksBids struct {
 func (o *OrderBook) GetOrderBook(currencyPair string, groupByPriceLimit bool) (OrderBookResponse, error) {
 	orderBookResponse := OrderBookResponse{}
 
+	if strings.TrimSpace(currencyPair) == "" {
+		return orderBookResponse, fmt.Errorf("currencyPair must not be empty")
+	}
+
 	// URL compose
 	u, err := url.Parse(o.Client.GetBaseUrl() + orderBookEndpoint)
 	if err != nil {
-		return orderBookResponse, err
+		return orderBookResponse, fmt.Errorf("failed to parse order book URL: %w", err)
 	}
 	q := u.Query()
 	q.Set(currencyPairParamName, currencyPair)
@@ -57,17 +61,17 @@ func (o *OrderBook) GetOrderBook(currencyPair string, groupByPriceLimit bool) (O
 		Body:       nil,
 	}
 	response, err := o.Client.MakePublicRequest(r)
-	if err != nil || response.StatusCode != http.StatusOK {
-		fmt.Println("Coinmate error: " + string(response.Body))
-		return orderBookResponse, err
+	if err != nil {
+		return orderBookResponse, fmt.Errorf("order book request failed: %w", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return orderBookResponse, fmt.Errorf("order book request failed: status=%d body=%s", response.StatusCode, string(response.Body))
 	}
 
 	err = json.Unmarshal(response.Body, &orderBookResponse)
 	if err != nil {
-		fmt.Println(err)
-		return orderBookResponse, err
+		return orderBookResponse, fmt.Errorf("failed to decode order book response: %w", err)
 	}
 
 	return orderBookResponse, err
-
 }

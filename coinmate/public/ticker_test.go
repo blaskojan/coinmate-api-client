@@ -154,15 +154,10 @@ func TestGetTickerHTTPError(t *testing.T) {
 	mockClient := &MockClient{response: mockResponse}
 	ticker := &Ticker{Client: mockClient}
 
-	response, err := ticker.GetTicker("BTC_EUR")
+	_, err := ticker.GetTicker("BTC_EUR")
 
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Should return empty response when HTTP status is not OK
-	if response.Error != false {
-		t.Error("Expected default error state")
+	if err == nil {
+		t.Errorf("Expected error for non-200 response")
 	}
 }
 
@@ -171,15 +166,10 @@ func TestGetTickerNetworkError(t *testing.T) {
 	mockClient := &MockClient{err: &http.ProtocolError{}}
 	ticker := &Ticker{Client: mockClient}
 
-	response, err := ticker.GetTicker("BTC_EUR")
+	_, err := ticker.GetTicker("BTC_EUR")
 
 	if err == nil {
 		t.Error("Expected error for network failure")
-	}
-
-	// Should return empty response on network error
-	if response.Error != false {
-		t.Error("Expected default error state")
 	}
 }
 
@@ -194,15 +184,10 @@ func TestGetTickerInvalidJSON(t *testing.T) {
 	mockClient := &MockClient{response: mockResponse}
 	ticker := &Ticker{Client: mockClient}
 
-	response, err := ticker.GetTicker("BTC_EUR")
+	_, err := ticker.GetTicker("BTC_EUR")
 
 	if err == nil {
 		t.Error("Expected error for invalid JSON")
-	}
-
-	// Should return empty response on JSON error
-	if response.Error != false {
-		t.Error("Expected default error state")
 	}
 }
 
@@ -210,15 +195,10 @@ func TestGetTickerEmptyCurrencyPair(t *testing.T) {
 	mockClient := &MockClient{response: &coinmate.Response{}}
 	ticker := &Ticker{Client: mockClient}
 
-	response, err := ticker.GetTicker("")
+	_, err := ticker.GetTicker("")
 
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Should handle empty currency pair gracefully
-	if response.Error != false {
-		t.Error("Expected default error state")
+	if err == nil {
+		t.Error("Expected error for empty currency pair")
 	}
 }
 
@@ -283,4 +263,3 @@ func TestTickerDataStructure(t *testing.T) {
 		t.Errorf("Expected Timestamp to be %d, got %d", data.Timestamp, unmarshaledData.Timestamp)
 	}
 }
-

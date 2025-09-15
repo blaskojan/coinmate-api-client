@@ -165,15 +165,10 @@ func TestGetTradingPairsHTTPError(t *testing.T) {
 	mockClient := &MockClient{response: mockResponse}
 	tradingPairs := &TradingPairs{Client: mockClient}
 
-	response, err := tradingPairs.GetTradingPairs()
+	_, err := tradingPairs.GetTradingPairs()
 
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Should return empty response when HTTP status is not OK
-	if response.Error != false {
-		t.Error("Expected default error state")
+	if err == nil {
+		t.Errorf("Expected error for non-200 response")
 	}
 }
 
@@ -308,4 +303,3 @@ func TestTradingPairsDataStructure(t *testing.T) {
 		t.Errorf("Expected trade statistics channel ID to be %s, got %s", data.TradeStatisticsWebSocketChannelId, unmarshaledData.TradeStatisticsWebSocketChannelId)
 	}
 }
-

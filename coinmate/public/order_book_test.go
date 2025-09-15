@@ -184,15 +184,10 @@ func TestGetOrderBookHTTPError(t *testing.T) {
 	mockClient := &MockClient{response: mockResponse}
 	orderBook := &OrderBook{Client: mockClient}
 
-	response, err := orderBook.GetOrderBook("BTC_EUR", false)
+	_, err := orderBook.GetOrderBook("BTC_EUR", false)
 
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Should return empty response when HTTP status is not OK
-	if response.Error != false {
-		t.Error("Expected default error state")
+	if err == nil {
+		t.Errorf("Expected error for non-200 response")
 	}
 }
 
@@ -201,15 +196,10 @@ func TestGetOrderBookNetworkError(t *testing.T) {
 	mockClient := &MockClient{err: &http.ProtocolError{}}
 	orderBook := &OrderBook{Client: mockClient}
 
-	response, err := orderBook.GetOrderBook("BTC_EUR", false)
+	_, err := orderBook.GetOrderBook("BTC_EUR", false)
 
 	if err == nil {
 		t.Error("Expected error for network failure")
-	}
-
-	// Should return empty response on network error
-	if response.Error != false {
-		t.Error("Expected default error state")
 	}
 }
 
@@ -224,15 +214,10 @@ func TestGetOrderBookInvalidJSON(t *testing.T) {
 	mockClient := &MockClient{response: mockResponse}
 	orderBook := &OrderBook{Client: mockClient}
 
-	response, err := orderBook.GetOrderBook("BTC_EUR", false)
+	_, err := orderBook.GetOrderBook("BTC_EUR", false)
 
 	if err == nil {
 		t.Error("Expected error for invalid JSON")
-	}
-
-	// Should return empty response on JSON error
-	if response.Error != false {
-		t.Error("Expected default error state")
 	}
 }
 
@@ -240,15 +225,10 @@ func TestGetOrderBookEmptyCurrencyPair(t *testing.T) {
 	mockClient := &MockClient{response: &coinmate.Response{}}
 	orderBook := &OrderBook{Client: mockClient}
 
-	response, err := orderBook.GetOrderBook("", false)
+	_, err := orderBook.GetOrderBook("", false)
 
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Should handle empty currency pair gracefully
-	if response.Error != false {
-		t.Error("Expected default error state")
+	if err == nil {
+		t.Error("Expected error for empty currency pair")
 	}
 }
 
@@ -329,4 +309,3 @@ func TestOrderBookAsksBidsStructure(t *testing.T) {
 		t.Errorf("Expected amount to be %f, got %f", data.Amount, unmarshaledData.Amount)
 	}
 }
-

@@ -84,6 +84,14 @@ func GetCoinmateClient(clientId, publicKey, privateKey string) *CoinmateClient {
 	return client
 }
 
+// SetTimeout updates the HTTP client timeout. Values <= 0 are ignored.
+func (c *CoinmateClient) SetTimeout(timeout time.Duration) {
+	if timeout <= 0 {
+		return
+	}
+	c.httpClient.Timeout = timeout
+}
+
 // Return nonce (security)
 func (c *CoinmateClient) GetNonce() string {
 	now := time.Now().UnixNano()

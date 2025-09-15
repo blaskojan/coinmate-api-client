@@ -57,7 +57,7 @@ HTTP Go client to communicate with [Coinmate.io API](https://coinmate.docs.apiar
 1. ~~Incomplete error handling~~: Errors are now wrapped with context across endpoints.
 2. ~~Response struct mismatches~~: Response structs now include JSON tags for parity with the API.
 3. ~~Missing input validation~~: Basic input validation added for public endpoints and order requests.
-4. **Hardcoded HTTP timeout**: The client uses a fixed 2s timeout; make this configurable.
+4. ~~Hardcoded HTTP timeout~~: Default 2s remains, but can now be configured via `SetTimeout`.
 
 ## Usage
 
@@ -72,6 +72,15 @@ tickerData, err := ticker.GetTicker("BTC_EUR")
 // Secure endpoints
 balances := &secure.Balances{Client: client}
 balanceData, err := balances.GetBalances()
+```
+
+### Configure HTTP timeout
+
+The client defaults to a 2-second timeout. You can override it:
+
+```go
+client := coinmate.GetCoinmateClient(clientId, apiKey, privateKey)
+client.SetTimeout(5 * time.Second)
 ```
 
 ## Running tests

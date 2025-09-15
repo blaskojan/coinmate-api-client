@@ -54,12 +54,10 @@ HTTP Go client to communicate with [Coinmate.io API](https://coinmate.docs.apiar
 
 ## Known Issues
 
-1. **Typo**: `TraidingPairs` should be `TradingPairs`
-2. **Incorrect method receiver**: `GetTradingPairs()` uses wrong receiver
-3. **Missing error handling**: Some endpoints lack proper error handling
-4. **Inconsistent response structures**: Some responses don't match API documentation
-5. **Missing request validation**: No validation for required parameters
-6. **Hardcoded timeout**: 2-second timeout might be insufficient
+1. **Missing error handling**: Some endpoints lack proper error handling
+2. **Inconsistent response structures**: Some responses don't match API documentation
+3. **Missing request validation**: No validation for required parameters
+4. **Hardcoded timeout**: 2-second timeout might be insufficient
 
 ## Usage
 

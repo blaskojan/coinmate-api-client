@@ -1,5 +1,5 @@
 # Development Dockerfile for Coinmate API Go Client
-FROM golang:1.21-alpine
+FROM golang:1.25-alpine
 
 # Install git, ca-certificates, and development tools
 RUN apk add --no-cache git ca-certificates tzdata bash curl

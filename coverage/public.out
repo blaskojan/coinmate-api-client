@@ -1,0 +1,25 @@
+mode: set
+tourGo/coinmate/public/order_book.go:41.106,46.16 3 1
+tourGo/coinmate/public/order_book.go:46.16,48.3 1 0
+tourGo/coinmate/public/order_book.go:49.2,60.56 7 1
+tourGo/coinmate/public/order_book.go:60.56,63.3 2 1
+tourGo/coinmate/public/order_book.go:65.2,66.16 2 1
+tourGo/coinmate/public/order_book.go:66.16,69.3 2 1
+tourGo/coinmate/public/order_book.go:71.2,71.31 1 1
+tourGo/coinmate/public/ticker.go:34.73,43.56 4 1
+tourGo/coinmate/public/ticker.go:43.56,46.3 2 1
+tourGo/coinmate/public/ticker.go:48.2,49.16 2 1
+tourGo/coinmate/public/ticker.go:49.16,52.3 2 1
+tourGo/coinmate/public/ticker.go:54.2,54.28 1 1
+tourGo/coinmate/public/trading_pairs.go:37.72,46.56 4 1
+tourGo/coinmate/public/trading_pairs.go:46.56,49.3 2 1
+tourGo/coinmate/public/trading_pairs.go:51.2,52.16 2 1
+tourGo/coinmate/public/trading_pairs.go:52.16,55.3 2 1
+tourGo/coinmate/public/trading_pairs.go:57.2,57.17 1 1
+tourGo/coinmate/public/transactions.go:38.118,43.16 3 1
+tourGo/coinmate/public/transactions.go:43.16,45.3 1 0
+tourGo/coinmate/public/transactions.go:46.2,57.56 7 1
+tourGo/coinmate/public/transactions.go:57.56,60.3 2 1
+tourGo/coinmate/public/transactions.go:62.2,63.16 2 1
+tourGo/coinmate/public/transactions.go:63.16,66.3 2 1
+tourGo/coinmate/public/transactions.go:68.2,68.34 1 1

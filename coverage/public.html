@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>public: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">tourGo/coinmate/public/order_book.go (94.4%)</option>
+				
+				<option value="file1">tourGo/coinmate/public/ticker.go (100.0%)</option>
+				
+				<option value="file2">tourGo/coinmate/public/trading_pairs.go (100.0%)</option>
+				
+				<option value="file3">tourGo/coinmate/public/transactions.go (94.4%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package public
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "net/url"
+        "strconv"
+        "strings"
+        "tourGo/coinmate"
+)
+
+const (
+        orderBookEndpoint          = "/orderBook"
+        currencyPairParamName      = "currencyPair"
+        groupByPriceLimitParamName = "groupByPriceLimit"
+)
+
+type OrderBook struct {
+        Client coinmate.ClientInterface
+}
+
+// Order book response
+type OrderBookResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         OrderBookData
+}
+
+type OrderBookData struct {
+        Asks []OrderBookAsksBids `json:"asks"`
+        Bids []OrderBookAsksBids `json:"bids"`
+}
+
+type OrderBookAsksBids struct {
+        Price  float64 `json:"price"`
+        Amount float64 `json:"amount"`
+}
+
+// Order book endpoint
+func (o *OrderBook) GetOrderBook(currencyPair string, groupByPriceLimit bool) (OrderBookResponse, error) <span class="cov8" title="1">{
+        orderBookResponse := OrderBookResponse{}
+
+        // URL compose
+        u, err := url.Parse(o.Client.GetBaseUrl() + orderBookEndpoint)
+        if err != nil </span><span class="cov0" title="0">{
+                return orderBookResponse, err
+        }</span>
+        <span class="cov8" title="1">q := u.Query()
+        q.Set(currencyPairParamName, currencyPair)
+        q.Set(groupByPriceLimitParamName, strings.Title(strconv.FormatBool(groupByPriceLimit)))
+        u.RawQuery = q.Encode()
+
+        r := coinmate.Request{
+                HTTPMethod: http.MethodGet,
+                URL:        u.String(),
+                Body:       nil,
+        }
+        response, err := o.Client.MakePublicRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov8" title="1">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return orderBookResponse, err
+        }</span>
+
+        <span class="cov8" title="1">err = json.Unmarshal(response.Body, &amp;orderBookResponse)
+        if err != nil </span><span class="cov8" title="1">{
+                fmt.Println(err)
+                return orderBookResponse, err
+        }</span>
+
+        <span class="cov8" title="1">return orderBookResponse, err</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package public
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "tourGo/coinmate"
+)
+
+type Ticker struct {
+        Client coinmate.ClientInterface
+}
+
+// Ticker endpoint response
+type TickerResponse struct {
+        Error        bool       `json:"error"`
+        ErrorMessage string     `json:"errorMessage"`
+        Data         TickerData `json:"data"`
+}
+
+type TickerData struct {
+        Last      float64 `json:"last"`
+        High      float64 `json:"high"`
+        Low       float64 `json:"low"`
+        Amount    float64 `json:"amount"`
+        Bid       float64 `json:"bid"`
+        Ask       float64 `json:"ask"`
+        Change    float64 `json:"change"`
+        Open      float64 `json:"open"`
+        Timestamp uint64  `json:"timestamp"`
+}
+
+// Ticker endpoint
+func (t *Ticker) GetTicker(currencyPair string) (TickerResponse, error) <span class="cov8" title="1">{
+        tickerResponse := TickerResponse{}
+
+        r := coinmate.Request{
+                HTTPMethod: http.MethodGet,
+                URL:        t.Client.GetBaseUrl() + "/ticker?currencyPair=" + currencyPair,
+                Body:       nil,
+        }
+        response, err := t.Client.MakePublicRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov8" title="1">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return tickerResponse, err
+        }</span>
+
+        <span class="cov8" title="1">err = json.Unmarshal(response.Body, &amp;tickerResponse)
+        if err != nil </span><span class="cov8" title="1">{
+                fmt.Println(err)
+                return tickerResponse, err
+        }</span>
+
+        <span class="cov8" title="1">return tickerResponse, err</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package public
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "tourGo/coinmate"
+)
+
+const (
+        tradingPairsEndpoint = "/tradingPairs"
+)
+
+type TradingPairs struct {
+        Client coinmate.ClientInterface
+}
+
+type TradingPairsResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         []TradingPairsData
+}
+
+type TradingPairsData struct {
+        Name                              string  `json:"name"`
+        FirstCurrency                     string  `json:"firstCurrency"`
+        SecondCurrency                    string  `json:"secondCurrency"`
+        PriceDecimals                     uint64  `json:"priceDecimals"`
+        LotDecimals                       uint64  `json:"lotDecimals"`
+        MinAmount                         float64 `json:"minAmount"`
+        TradesWebSocketChannelId          string  `json:"tradesWebSocketChannelId"`
+        OrderBookWebSocketChannelId       string  `json:"orderBookWebSocketChannelId"`
+        TradeStatisticsWebSocketChannelId string  `json:"tradeStatisticsWebSocketChannelId"`
+}
+
+// Trading pairs endpoint
+func (t *TradingPairs) GetTradingPairs() (TradingPairsResponse, error) <span class="cov8" title="1">{
+        tpr := TradingPairsResponse{}
+
+        r := coinmate.Request{
+                HTTPMethod: http.MethodGet,
+                URL:        t.Client.GetBaseUrl() + tradingPairsEndpoint,
+                Body:       nil,
+        }
+        response, err := t.Client.MakePublicRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov8" title="1">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return tpr, err
+        }</span>
+
+        <span class="cov8" title="1">err = json.Unmarshal(response.Body, &amp;tpr)
+        if err != nil </span><span class="cov8" title="1">{
+                fmt.Println(err)
+                return tpr, err
+        }</span>
+
+        <span class="cov8" title="1">return tpr, err</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package public
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "net/url"
+        "strconv"
+        "tourGo/coinmate"
+)
+
+type Transactions struct {
+        Client coinmate.ClientInterface
+}
+
+const (
+        transactionsEndpoint        = "/transactions"
+        minutesIntoHistoryParamName = "minutesIntoHistory"
+)
+
+// Ticker endpoint response
+type TransactionsResponse struct {
+        Error        bool               `json:"error"`
+        ErrorMessage string             `json:"errorMessage"`
+        Data         []TransactionsData `json:"data"`
+}
+
+type TransactionsData struct {
+        Timestamp     int64   `json:"timestamp"`
+        TransactionId string  `json:"transactionId"`
+        Price         float64 `json:"price"`
+        Amount        float64 `json:"amount"`
+        CurrencyPair  string  `json:"currencyPair"`
+        TradeType     string  `json:"tradeType"`
+}
+
+// Transactions
+func (t *Transactions) GetTransactions(currencyPair string, minutesIntoHistory uint64) (TransactionsResponse, error) <span class="cov8" title="1">{
+        transactionsResponse := TransactionsResponse{}
+
+        // URL compose
+        u, err := url.Parse(t.Client.GetBaseUrl() + transactionsEndpoint)
+        if err != nil </span><span class="cov0" title="0">{
+                return transactionsResponse, err
+        }</span>
+        <span class="cov8" title="1">q := u.Query()
+        q.Set(currencyPairParamName, currencyPair)
+        q.Set(minutesIntoHistoryParamName, strconv.FormatUint(minutesIntoHistory, 10))
+        u.RawQuery = q.Encode()
+
+        r := coinmate.Request{
+                HTTPMethod: http.MethodGet,
+                URL:        u.String(),
+                Body:       nil,
+        }
+        response, err := t.Client.MakePublicRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov8" title="1">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return transactionsResponse, err
+        }</span>
+
+        <span class="cov8" title="1">err = json.Unmarshal(response.Body, &amp;transactionsResponse)
+        if err != nil </span><span class="cov8" title="1">{
+                fmt.Println(err)
+                return transactionsResponse, err
+        }</span>
+
+        <span class="cov8" title="1">return transactionsResponse, err</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

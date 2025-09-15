@@ -54,6 +54,7 @@ type CoinmateClient struct {
 	Nonce      string
 	Signature  string
 	httpClient http.Client
+	lastNonce  int64
 }
 
 type CoinmateResponse struct {
@@ -85,7 +86,12 @@ func GetCoinmateClient(clientId, publicKey, privateKey string) *CoinmateClient {
 
 // Return nonce (security)
 func (c *CoinmateClient) GetNonce() string {
-	return strconv.FormatInt(time.Now().Unix(), 10)
+	now := time.Now().UnixNano()
+	if now <= c.lastNonce {
+		now = c.lastNonce + 1
+	}
+	c.lastNonce = now
+	return strconv.FormatInt(now, 10)
 }
 
 // Return signature (security)

@@ -1,0 +1,47 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+doc/
+COMPLIANCE_ANALYSIS.md
+
+# Test coverage
+coverage/
+*.out
+*.html
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Build artifacts
+main
+test-runner
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Temporary files
+tmp/
+temp/
+

@@ -1,0 +1,561 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>secure: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">tourGo/coinmate/secure/balances.go (0.0%)</option>
+				
+				<option value="file1">tourGo/coinmate/secure/order.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package secure
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "tourGo/coinmate"
+)
+
+const endpoint = "/balances"
+
+type Balances struct {
+        Client coinmate.ClientInterface
+}
+
+// Order book response
+type BalancesResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         map[string]BalanceCurrency
+}
+
+// Balance currency data
+type BalanceCurrency struct {
+        Currency  string  `json:"currency"`
+        Balance   float32 `json:"balance"`
+        Reserved  float32 `json:"reserved"`
+        Available float32 `json:"available"`
+}
+
+// Balances endpoint
+func (b *Balances) GetBalances() (BalancesResponse, error) <span class="cov0" title="0">{
+        balancesResponse := BalancesResponse{}
+
+        ap := map[string]string{}
+
+        r := coinmate.Request{
+                HTTPMethod: http.MethodPost,
+                URL:        b.Client.GetBaseUrl() + endpoint,
+                Body:       b.Client.GetRequestBody(ap),
+        }
+        response, err := b.Client.MakeSecureRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return balancesResponse, err
+        }</span>
+
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;balancesResponse)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return balancesResponse, err
+        }</span>
+
+        <span class="cov0" title="0">return balancesResponse, err</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package secure
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "net/url"
+        "strconv"
+        "strings"
+        "tourGo/coinmate"
+)
+
+const (
+        orderHistoryEndpoint        = "/orderHistory"
+        openOrdersEndpoint          = "/openOrders"
+        cancelOrderEndpoint         = "/cancelOrder"
+        cancelOrderWithInfoEndpoint = "/cancelOrderWithInfo"
+        buyLimitOrderEndpoint       = "/buyLimit"
+        sellLimitOrderEndpoint      = "/sellLimit"
+        buyInstantOrderEndpoint     = "/buyInstant"
+        sellInstantOrderEndpoint    = "/sellInstant"
+        currencyPairParamName       = "currencyPair"
+        limitReturnedOrders         = "limit"
+        orderIdParamName            = "orderId"
+        amountParamName             = "amount"
+        priceParamName              = "price"
+        stopPriceParamName          = "stopPrice"
+        hiddenParamName             = "hidden"
+        immediateOrCancelParamName  = "immediateOrCancel"
+        clientOrderIdParamName      = "clientOrderId"
+        totalParamName              = "total"
+)
+
+type Order struct {
+        Client coinmate.ClientInterface
+}
+
+// Order history response
+type OrderHistoryResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         []OrderHistoryData
+}
+
+// Order history data
+type OrderHistoryData struct {
+        Id              uint64  `json:"id"`
+        Timestamp       int64   `json:"timestamp"`
+        Type            string  `json:"type"`
+        Price           float64 `json:"price"`
+        RemainingAmount float64 `json:"remainingAmount"`
+        OriginalAmount  float64 `json:"originalAmount"`
+        Status          string  `json:"status"`
+        StopPrice       float64 `json:"stopPrice"`
+        OrderTradeType  string  `json:"orderTradeType"`
+        Hidden          bool    `json:"hidden"`
+}
+
+// Open orders history response
+type OpenOrdersResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         []OpenOrdersData
+}
+
+// Open orders data
+type OpenOrdersData struct {
+        Id             uint64  `json:"id"`
+        Timestamp      int64   `json:"timestamp"`
+        Type           string  `json:"type"`
+        CurrencyPair   string  `json:"currencyPair"`
+        Price          float64 `json:"price"`
+        Amount         float64 `json:"amount"`
+        OrderTradeType string  `json:"orderTradeType"`
+        StopPrice      float64 `json:"stopPrice"`
+        Hidden         bool    `json:"hidden"`
+}
+
+// Cancel order
+type CancelOrderResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         bool
+}
+
+// Cancel order with info response
+type CancelOrderWithInfoResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         CancelOrderWithInfoData
+}
+
+// Cancel order info data
+type CancelOrderWithInfoData struct {
+        Success         bool    `json:"success"`
+        RemainingAmount float64 `json:"remainingAmount"`
+}
+
+// Buy limit response
+type BuyLimitResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         uint64
+}
+type BuyLimit struct {
+        Error        bool
+        ErrorMessage string
+        OrderId      uint64
+}
+
+// Sell limit response
+type SellLimitResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         uint64
+}
+type SellLimit struct {
+        Error        bool
+        ErrorMessage string
+        OrderId      uint64
+}
+
+// Buy instant response
+type BuyInstantResponse struct {
+        Error        bool
+        ErrorMessage string
+        Data         uint64
+}
+
+type BuySell struct {
+        Error        bool
+        ErrorMessage string
+        Data         uint64
+}
+type BuyAndSellResponse struct {
+        Error        bool
+        ErrorMessage string
+        OrderId      uint64
+}
+
+// Order history
+func (o *Order) GetHistory(currencyPair string, limit int64) (OrderHistoryResponse, error) <span class="cov0" title="0">{
+        orderHistoryResponse := OrderHistoryResponse{}
+
+        // URL compose
+        u, _ := url.Parse(o.Client.GetBaseUrl() + orderHistoryEndpoint)
+        q := u.Query()
+
+        // Adding optional GET params
+        if currencyPair != "" </span><span class="cov0" title="0">{
+                q.Set(currencyPairParamName, currencyPair)
+        }</span>
+        <span class="cov0" title="0">if limit != 0 </span><span class="cov0" title="0">{
+                q.Set(limitReturnedOrders, strconv.FormatInt(limit, 10))
+        }</span>
+
+        <span class="cov0" title="0">u.RawQuery = q.Encode()
+
+        ap := map[string]string{}
+
+        r := coinmate.Request{
+                HTTPMethod: http.MethodPost,
+                URL:        u.String(),
+                Body:       o.Client.GetRequestBody(ap),
+        }
+        response, err := o.Client.MakeSecureRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                fmt.Println(err)
+                return orderHistoryResponse, err
+        }</span>
+
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;orderHistoryResponse)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return orderHistoryResponse, err
+        }</span>
+
+        <span class="cov0" title="0">return orderHistoryResponse, err</span>
+}
+
+// Order history
+func (o *Order) GetOpenOrders(currencyPair string) (OpenOrdersResponse, error) <span class="cov0" title="0">{
+        openOrdersResponse := OpenOrdersResponse{}
+
+        // URL compose
+        u, _ := url.Parse(o.Client.GetBaseUrl() + openOrdersEndpoint)
+        q := u.Query()
+
+        // Adding optional GET param
+        if currencyPair != "" </span><span class="cov0" title="0">{
+                q.Set(currencyPairParamName, currencyPair)
+        }</span>
+
+        <span class="cov0" title="0">u.RawQuery = q.Encode()
+
+        ap := map[string]string{}
+
+        r := coinmate.Request{
+                HTTPMethod: http.MethodPost,
+                URL:        u.String(),
+                Body:       o.Client.GetRequestBody(ap),
+        }
+        response, err := o.Client.MakeSecureRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return openOrdersResponse, err
+        }</span>
+
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;openOrdersResponse)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return openOrdersResponse, err
+        }</span>
+
+        <span class="cov0" title="0">return openOrdersResponse, err</span>
+}
+
+// Buy limit
+func (o *Order) BuyLimit(amount, price, stopPrice float64, currencyPair string, hidden, immediateOrCancel bool, clientOrderId uint64) (BuyLimit, error) <span class="cov0" title="0">{
+        buyLimitResponse := BuyLimitResponse{}
+        buyLimit := BuyLimit{}
+
+        response, err := limitOrders(o, amount, price, currencyPair, buyLimitOrderEndpoint, stopPrice, hidden, immediateOrCancel, clientOrderId)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println(response)
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return buyLimit, err
+        }</span>
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;buyLimitResponse)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return buyLimit, err
+        }</span>
+
+        <span class="cov0" title="0">buyLimit.Error = buyLimitResponse.Error
+        buyLimit.ErrorMessage = buyLimitResponse.ErrorMessage
+        buyLimit.OrderId = buyLimitResponse.Data
+
+        return buyLimit, err</span>
+}
+
+// Sell limit
+func (o *Order) SellLimit(amount, price, stopPrice float64, currencyPair string, hidden, immediateOrCancel bool, clientOrderId uint64) (SellLimit, error) <span class="cov0" title="0">{
+        sellLimitResponse := SellLimitResponse{}
+        sellLimit := SellLimit{}
+
+        response, err := limitOrders(o, amount, price, currencyPair, sellLimitOrderEndpoint, stopPrice, hidden, immediateOrCancel, clientOrderId)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println(response)
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return sellLimit, err
+        }</span>
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;sellLimitResponse)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return sellLimit, err
+        }</span>
+
+        <span class="cov0" title="0">sellLimit.Error = sellLimitResponse.Error
+        sellLimit.ErrorMessage = sellLimitResponse.ErrorMessage
+        sellLimit.OrderId = sellLimitResponse.Data
+
+        return sellLimit, err</span>
+}
+
+// Buy instantly
+func (o *Order) BuyInstant(total float64, cp string, clientOrderId uint64) (BuyAndSellResponse, error) <span class="cov0" title="0">{
+        return buySellInstantRequest(o, buyInstantOrderEndpoint, total, cp, clientOrderId)
+}</span>
+
+// Sell instantly
+func (o *Order) SellInstant(total float64, cp string, clientOrderId uint64) (BuyAndSellResponse, error) <span class="cov0" title="0">{
+        return buySellInstantRequest(o, sellInstantOrderEndpoint, total, cp, clientOrderId)
+}</span>
+
+// Cancel order
+func (o *Order) CancelOrder(orderId uint64) (CancelOrderResponse, error) <span class="cov0" title="0">{
+        cancelOrderResponse := CancelOrderResponse{}
+
+        response, err := cancelOrderRequest(o, cancelOrderEndpoint, orderId)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return cancelOrderResponse, err
+        }</span>
+
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;cancelOrderResponse)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return cancelOrderResponse, err
+        }</span>
+
+        <span class="cov0" title="0">return cancelOrderResponse, err</span>
+}
+
+// Cancel order with info
+func (o *Order) CancelOrderWithInfo(orderId uint64) (CancelOrderWithInfoResponse, error) <span class="cov0" title="0">{
+        cancelOrderWithInfoResponse := CancelOrderWithInfoResponse{}
+
+        response, err := cancelOrderRequest(o, cancelOrderWithInfoEndpoint, orderId)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return cancelOrderWithInfoResponse, err
+        }</span>
+
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;cancelOrderWithInfoResponse)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return cancelOrderWithInfoResponse, err
+        }</span>
+
+        <span class="cov0" title="0">return cancelOrderWithInfoResponse, err</span>
+}
+
+// Helper functions
+
+// Calling limit orders endpoints
+func limitOrders(o *Order, amount float64, price float64, currencyPair, endpoint string, stopPrice float64, hidden bool, immediateOrCancel bool, clientOrderId uint64) (coinmate.Response, error) <span class="cov0" title="0">{
+        // URL compose
+        u, _ := url.Parse(o.Client.GetBaseUrl() + endpoint)
+        //q := u.Query()
+        //u.RawQuery = q.Encode()
+        ap := make(map[string]string)
+        ap[amountParamName] = strconv.FormatFloat(amount, 'f', 2, 64)
+        ap[priceParamName] = strconv.FormatFloat(price, 'f', 2, 64)
+        ap[currencyPairParamName] = strings.ToLower(currencyPair)
+        if stopPrice &gt; 0 </span><span class="cov0" title="0">{
+                ap[stopPriceParamName] = strconv.FormatFloat(stopPrice, 'f', 2, 64)
+        }</span>
+        <span class="cov0" title="0">if hidden == true </span><span class="cov0" title="0">{
+                ap[hiddenParamName] = "1"
+        }</span>
+        <span class="cov0" title="0">if immediateOrCancel == true </span><span class="cov0" title="0">{
+                ap[immediateOrCancelParamName] = "1"
+        }</span>
+        <span class="cov0" title="0">if clientOrderId &gt; 0 </span><span class="cov0" title="0">{
+                ap[clientOrderIdParamName] = strconv.FormatUint(clientOrderId, 10)
+        }</span>
+        <span class="cov0" title="0">r := coinmate.Request{
+                HTTPMethod: http.MethodPost,
+                URL:        u.String(),
+                Body:       o.Client.GetRequestBody(ap),
+        }
+        response, err := o.Client.MakeSecureRequest(r)
+        return response, err</span>
+}
+
+// Buy or sell instant request
+func buySellInstantRequest(o *Order, endpoint string, total float64, currencyPair string, clientOrderId uint64) (BuyAndSellResponse, error) <span class="cov0" title="0">{
+        bir := BuySell{}
+        basr := BuyAndSellResponse{}
+        u, _ := url.Parse(o.Client.GetBaseUrl() + endpoint)
+        ap := make(map[string]string)
+        if endpoint == sellInstantOrderEndpoint </span><span class="cov0" title="0">{
+                ap[amountParamName] = strconv.FormatFloat(total, 'f', 8, 64)
+        }</span> else<span class="cov0" title="0"> {
+                ap[totalParamName] = strconv.FormatFloat(total, 'f', 2, 64)
+        }</span>
+        <span class="cov0" title="0">ap[currencyPairParamName] = strings.ToLower(currencyPair)
+        if clientOrderId &gt; 0 </span><span class="cov0" title="0">{
+                ap[clientOrderIdParamName] = strconv.FormatUint(clientOrderId, 10)
+        }</span>
+        <span class="cov0" title="0">r := coinmate.Request{
+                HTTPMethod: http.MethodPost,
+                URL:        u.String(),
+                Body:       o.Client.GetRequestBody(ap),
+        }
+        response, err := o.Client.MakeSecureRequest(r)
+        if err != nil || response.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                fmt.Println(response)
+                fmt.Println("Coinmate error: " + string(response.Body))
+                return basr, err
+        }</span>
+        <span class="cov0" title="0">err = json.Unmarshal(response.Body, &amp;bir)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return basr, err
+        }</span>
+
+        <span class="cov0" title="0">basr.Error = bir.Error
+        basr.ErrorMessage = bir.ErrorMessage
+        basr.OrderId = bir.Data
+
+        return basr, err</span>
+}
+
+func cancelOrderRequest(o *Order, endpoint string, orderId uint64) (coinmate.Response, error) <span class="cov0" title="0">{
+        // URL compose
+        u, _ := url.Parse(o.Client.GetBaseUrl() + endpoint)
+        ap := make(map[string]string)
+        ap[orderIdParamName] = strconv.FormatUint(orderId, 10)
+        r := coinmate.Request{
+                HTTPMethod: http.MethodPost,
+                URL:        u.String(),
+                Body:       o.Client.GetRequestBody(ap),
+        }
+        response, err := o.Client.MakeSecureRequest(r)
+        return response, err
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

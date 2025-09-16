@@ -179,6 +179,3 @@ docker build --no-cache -t coinmate-api-client .
 4. Start development: `make docker-dev`
 
 For more information, see the main [README.md](README.md).
-
-
-

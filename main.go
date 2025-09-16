@@ -49,8 +49,8 @@ func main() {
 	if err != nil {
 		log.Printf("Order book error: %v", err)
 	} else {
-		fmt.Printf("✅ Order book: %d asks, %d bids\n", 
-			len(orderBookResponse.Data.Asks), 
+		fmt.Printf("✅ Order book: %d asks, %d bids\n",
+			len(orderBookResponse.Data.Asks),
 			len(orderBookResponse.Data.Bids))
 	}
 
@@ -76,7 +76,7 @@ func main() {
 		} else {
 			fmt.Printf("✅ Balances: Found %d currencies\n", len(balancesResponse.Data))
 			for currency, balance := range balancesResponse.Data {
-				fmt.Printf("   %s: %.8f (available: %.8f)\n", 
+				fmt.Printf("   %s: %.8f (available: %.8f)\n",
 					currency, balance.Balance, balance.Available)
 			}
 		}
@@ -104,6 +104,3 @@ func main() {
 
 	fmt.Println("\n✅ Demo completed!")
 }
-
-
-

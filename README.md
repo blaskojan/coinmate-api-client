@@ -11,6 +11,10 @@ HTTP Go client to communicate with [Coinmate.io API](https://coinmate.docs.apiar
 - `/orderBook` - Get order book with optional grouping
 - `/tradingPairs` - Get available trading pairs
 - `/transactions` - Get recent transactions
+- `/currencies` - Get available currencies
+- `/currency-pairs` - Get currency pairs
+- `/ticker-all` - Get all tickers
+- `/system/get-server-time` - Get server time
 
 **Secure Endpoints:**
 - `/balances` - Get account balances
@@ -26,10 +30,7 @@ HTTP Go client to communicate with [Coinmate.io API](https://coinmate.docs.apiar
 ### ❌ Missing Endpoints
 
 **Public Endpoints:**
-- `/currencies` - Get available currencies
-- `/currency-pairs` - Get currency pairs
-- `/ticker-all` - Get all tickers
-- `/system/get-server-time` - Get server time
+None
 
 **Secure Endpoints:**
 - `/trader-fees` - Get trading fees

@@ -75,6 +75,20 @@ balances := &secure.Balances{Client: client}
 balanceData, err := balances.GetBalances()
 ```
 
+## Authentication
+
+- **Public endpoints**: No credentials required. You can create a client without `clientId`, `apiKey`, or `privateKey`:
+
+```go
+client := coinmate.GetCoinmateClient("", "", "")
+```
+
+- **Secure endpoints**: Require `clientId`, `apiKey`, and `privateKey` for request signing:
+
+```go
+client := coinmate.GetCoinmateClient(clientId, apiKey, privateKey)
+```
+
 ### Configure HTTP timeout
 
 The client defaults to a 2-second timeout. You can override it:

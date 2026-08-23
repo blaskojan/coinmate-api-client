@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, and others via the
 
 ## Overview
 
-A Go HTTP client for the [Coinmate.io API](https://coinmate.docs.apiary.io/#). Requires Go 1.25+. The `main.go` at the root is a demo harness that exercises endpoints; the reusable client lives under `coinmate/`.
+A Go HTTP client for the [Coinmate.io API](https://coinmate.docs.apiary.io/#). Requires Go 1.27+. The `main.go` at the root is a demo harness that exercises endpoints; the reusable client lives under `coinmate/`.
 
 ## Module layout
 
@@ -23,7 +23,7 @@ go test -v ./coinmate/secure/                       # single package
 go test -v -run TestGetTickerSuccess ./coinmate/public/   # single test
 ```
 
-Docker equivalents (`make docker-test`, `quick-test`, `test-docker`) run against `golang:1.21-alpine`. The demo reads `COINMATE_CLIENT_ID`, `COINMATE_API_KEY`, `COINMATE_PRIVATE_KEY` from the environment; secure endpoints are skipped when they are unset.
+Docker equivalents (`make docker-test`, `quick-test`, `test-docker`) run against `golang:1.27-alpine`. The demo reads `COINMATE_CLIENT_ID`, `COINMATE_API_KEY`, `COINMATE_PRIVATE_KEY` from the environment; secure endpoints are skipped when they are unset.
 
 ## Architecture
 

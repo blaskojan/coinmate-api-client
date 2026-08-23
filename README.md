@@ -129,7 +129,7 @@ client.SetTimeout(5 * time.Second)
 
 ## Running tests
 
-You can run tests locally (requires Go 1.25+) or inside Docker.
+You can run tests locally (requires Go 1.27+) or inside Docker.
 
 ### Local
 

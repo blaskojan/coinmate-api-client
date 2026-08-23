@@ -56,7 +56,7 @@ echo ""
 
 # Run tests for main client
 echo "📦 Testing main client..."
-if docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go mod download && go test -v -coverprofile=coverage/client.out ./coinmate/"; then
+if docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go test -v -coverprofile=coverage/client.out ./coinmate/"; then
     echo "✅ Main client tests passed"
 else
     echo "❌ Main client tests failed"
@@ -66,7 +66,7 @@ fi
 # Run tests for public endpoints
 echo ""
 echo "🌐 Testing public endpoints..."
-if docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go mod download && go test -v -coverprofile=coverage/public.out ./coinmate/public/"; then
+if docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go test -v -coverprofile=coverage/public.out ./coinmate/public/"; then
     echo "✅ Public endpoints tests passed"
 else
     echo "❌ Public endpoints tests failed"
@@ -76,7 +76,7 @@ fi
 # Run tests for secure endpoints
 echo ""
 echo "🔒 Testing secure endpoints..."
-if docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go mod download && go test -v -coverprofile=coverage/secure.out ./coinmate/secure/"; then
+if docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go test -v -coverprofile=coverage/secure.out ./coinmate/secure/"; then
     echo "✅ Secure endpoints tests passed"
 else
     echo "❌ Secure endpoints tests failed"
@@ -87,17 +87,17 @@ fi
 echo ""
 echo "📊 Generating coverage reports..."
 if [ -f coverage/client.out ]; then
-    docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go tool cover -html=coverage/client.out -o coverage/client.html"
+    docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go tool cover -html=coverage/client.out -o coverage/client.html"
     echo "✅ Client coverage report: coverage/client.html"
 fi
 
 if [ -f coverage/public.out ]; then
-    docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go tool cover -html=coverage/public.out -o coverage/public.html"
+    docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go tool cover -html=coverage/public.out -o coverage/public.html"
     echo "✅ Public coverage report: coverage/public.html"
 fi
 
 if [ -f coverage/secure.out ]; then
-    docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go tool cover -html=coverage/secure.out -o coverage/secure.html"
+    docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go tool cover -html=coverage/secure.out -o coverage/secure.html"
     echo "✅ Secure coverage report: coverage/secure.html"
 fi
 
@@ -107,26 +107,26 @@ echo "📈 Coverage Summary:"
 echo "==================="
 if [ -f coverage/client.out ]; then
     echo "Main Client:"
-    docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go tool cover -func=coverage/client.out | tail -1"
+    docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go tool cover -func=coverage/client.out | tail -1"
     echo ""
 fi
 
 if [ -f coverage/public.out ]; then
     echo "Public Endpoints:"
-    docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go tool cover -func=coverage/public.out | tail -1"
+    docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go tool cover -func=coverage/public.out | tail -1"
     echo ""
 fi
 
 if [ -f coverage/secure.out ]; then
     echo "Secure Endpoints:"
-    docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go tool cover -func=coverage/secure.out | tail -1"
+    docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go tool cover -func=coverage/secure.out | tail -1"
     echo ""
 fi
 
 # Run all tests together
 echo ""
 echo "🚀 Running all tests together..."
-if docker run --rm -v $(PWD):/app -w /app golang:1.25-alpine sh -c "go mod download && go test -v ./..."; then
+if docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go test -v ./..."; then
     echo ""
     echo "✅ All tests passed!"
     echo ""

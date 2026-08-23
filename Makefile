@@ -28,19 +28,19 @@ docker-build:
 
 docker-test:
 	@echo "🧪 Running tests in Docker..."
-	docker run --rm -v $(PWD):/app -w /app golang:1.21-alpine sh -c "go mod download && go test -v -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html"
+	docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go test -v -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html"
 
 docker-run:
 	@echo "🚀 Running application in Docker..."
-	docker run --rm -v $(PWD):/app -w /app golang:1.21-alpine sh -c "go mod download && go run ."
+	docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go run ."
 
 docker-dev:
 	@echo "🛠️  Starting development environment..."
-	docker run --rm -it -v $(PWD):/app -w /app -p 8080:8080 golang:1.21-alpine sh -c "go mod download && go run ."
+	docker run --rm -it -v $(PWD):/app -w /app -p 8080:8080 golang:1.27-alpine sh -c "go mod download && go run ."
 
 docker-test-watch:
 	@echo "👀 Starting test watcher..."
-	docker run --rm -v $(PWD):/app -w /app golang:1.21-alpine sh -c "go mod download && while true; do go test -v ./...; sleep 2; done"
+	docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && while true; do go test -v ./...; sleep 2; done"
 
 # Local commands (requires Go installed)
 build:
@@ -90,12 +90,12 @@ dev-hot-reload:
 # Quick test run
 quick-test:
 	@echo "⚡ Running quick tests..."
-	docker run --rm -v $(PWD):/app -w /app golang:1.21-alpine sh -c "go mod download && go test -v ./..."
+	docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go test -v ./..."
 
 # Alternative test run (if docker compose is not available)
 test-docker:
 	@echo "🧪 Running tests with Docker..."
-	docker run --rm -v $(PWD):/app -w /app golang:1.21-alpine sh -c "go mod download && go test -v -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html"
+	docker run --rm -v $(PWD):/app -w /app golang:1.27-alpine sh -c "go mod download && go test -v -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html"
 
 # Production build
 prod-build:

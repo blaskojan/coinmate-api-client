@@ -1,5 +1,7 @@
 # Coinmate API Go Client
 
+[![CI](https://github.com/blaskojan/coinmate-api-client/actions/workflows/ci.yml/badge.svg)](https://github.com/blaskojan/coinmate-api-client/actions/workflows/ci.yml)
+
 HTTP Go client to communicate with [Coinmate.io API](https://coinmate.docs.apiary.io/#)
 
 ## Current Implementation Status

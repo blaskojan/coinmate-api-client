@@ -52,6 +52,15 @@ When adding an endpoint, mirror the existing files (`coinmate/public/ticker.go`,
 
 Each package defines its own `MockClient` embedding `coinmate.ClientInterface` and overriding the request methods to return a canned `coinmate.Response` or error (see `coinmate/public/ticker_test.go`). Tests cover success, API-error response (`error: true`), non-200 HTTP status, network error, and invalid JSON. Follow this same set of cases for new endpoints.
 
+## Commit conventions
+
+Use [Conventional Commits](https://www.conventionalcommits.org/): `<type>[optional scope]: <description>`.
+
+- Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`.
+- Keep the description imperative and lowercase, no trailing period (e.g. `feat(secure): add trade-history endpoint`).
+- Scope is optional; use a package name when it helps (`public`, `secure`, `client`).
+- Breaking changes: add `!` after the type/scope (`feat!: ...`) or a `BREAKING CHANGE:` footer.
+
 ## Status
 
 Many secure endpoints (withdrawals/deposits, trade history, transfers, replace/cancel-all orders, get-order-by-id) are not yet implemented — see README.md for the current list. The `GetRequestBody` in `client.go` still prints the encoded body to stdout (`fmt.Println`), a debug leftover to be aware of when working near request signing.

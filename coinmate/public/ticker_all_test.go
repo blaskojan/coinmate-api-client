@@ -3,7 +3,7 @@ package public
 import (
 	"net/http"
 	"testing"
-	"tourGo/coinmate"
+	"coinmate/coinmate"
 )
 
 func TestGetTickerAllSuccess(t *testing.T) {

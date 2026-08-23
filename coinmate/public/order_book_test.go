@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
-	"tourGo/coinmate"
+	"coinmate/coinmate"
 )
 
 func TestGetOrderBookSuccess(t *testing.T) {

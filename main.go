@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"tourGo/coinmate"
-	"tourGo/coinmate/public"
-	"tourGo/coinmate/secure"
+	"coinmate/coinmate"
+	"coinmate/coinmate/public"
+	"coinmate/coinmate/secure"
 )
 
 func main() {

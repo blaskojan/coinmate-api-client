@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"tourGo/coinmate"
+	"coinmate/coinmate"
 )
 
 const (

@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A Go HTTP client for the [Coinmate.io API](https://coinmate.docs.apiary.io/#). Requires Go 1.25+. The `main.go` at the root is a demo harness that exercises endpoints; the reusable client lives under `coinmate/`.
 
-## Module name gotcha
+## Module layout
 
-The Go module is named `tourGo` (see `go.mod`), not `coinmate`. All internal imports use this prefix: `tourGo/coinmate`, `tourGo/coinmate/public`, `tourGo/coinmate/secure`. Keep this in mind when adding files or moving packages.
+The Go module is named `coinmate` (see `go.mod`), and the library packages live under the `coinmate/` directory, so internal imports are `coinmate/coinmate`, `coinmate/coinmate/public`, and `coinmate/coinmate/secure` (module path + directory). The package name is `coinmate` while the import path is `coinmate/coinmate`.
 
 ## Commands
 

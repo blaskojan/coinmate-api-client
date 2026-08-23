@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"tourGo/coinmate"
+	"coinmate/coinmate"
 )
 
 type Transactions struct {

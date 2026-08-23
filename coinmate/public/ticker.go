@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"tourGo/coinmate"
+	"coinmate/coinmate"
 )
 
 type Ticker struct {

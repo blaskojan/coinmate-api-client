@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
-	"tourGo/coinmate"
+	"coinmate/coinmate"
 )
 
 // Mock client for testing

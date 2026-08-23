@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"coinmate/coinmate"
+	"github.com/blaskojan/coinmate-api-client/coinmate"
 )
 
 type Transactions struct {

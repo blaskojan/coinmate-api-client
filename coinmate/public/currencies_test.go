@@ -3,7 +3,7 @@ package public
 import (
 	"net/http"
 	"testing"
-	"coinmate/coinmate"
+	"github.com/blaskojan/coinmate-api-client/coinmate"
 )
 
 func TestGetCurrenciesSuccess(t *testing.T) {

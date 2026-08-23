@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"coinmate/coinmate"
-	"coinmate/coinmate/public"
-	"coinmate/coinmate/secure"
+	"github.com/blaskojan/coinmate-api-client/coinmate"
+	"github.com/blaskojan/coinmate-api-client/coinmate/public"
+	"github.com/blaskojan/coinmate-api-client/coinmate/secure"
 )
 
 func main() {

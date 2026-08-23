@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
-	"coinmate/coinmate"
+	"github.com/blaskojan/coinmate-api-client/coinmate"
 )
 
 func TestGetTransactionsSuccess(t *testing.T) {

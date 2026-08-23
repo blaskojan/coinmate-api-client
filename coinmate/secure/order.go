@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"coinmate/coinmate"
+	"github.com/blaskojan/coinmate-api-client/coinmate"
 )
 
 const (

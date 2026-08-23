@@ -8,7 +8,7 @@ A Go HTTP client for the [Coinmate.io API](https://coinmate.docs.apiary.io/#). R
 
 ## Module layout
 
-The Go module is named `coinmate` (see `go.mod`), and the library packages live under the `coinmate/` directory, so internal imports are `coinmate/coinmate`, `coinmate/coinmate/public`, and `coinmate/coinmate/secure` (module path + directory). The package name is `coinmate` while the import path is `coinmate/coinmate`.
+The Go module path is `github.com/blaskojan/coinmate-api-client` (see `go.mod`). Library packages live under the `coinmate/` directory, so internal imports are `github.com/blaskojan/coinmate-api-client/coinmate`, `.../coinmate/public`, and `.../coinmate/secure`.
 
 ## Commands
 

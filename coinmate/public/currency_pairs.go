@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"coinmate/coinmate"
+	"github.com/blaskojan/coinmate-api-client/coinmate"
 )
 
 type CurrencyPairs struct {

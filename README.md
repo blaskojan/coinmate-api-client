@@ -60,19 +60,46 @@ None
 3. ~~Missing input validation~~: Basic input validation added for public endpoints and order requests.
 4. ~~Hardcoded HTTP timeout~~: Default 2s remains, but can now be configured via `SetTimeout`.
 
+## Installation
+
+```bash
+go get github.com/blaskojan/coinmate-api-client/coinmate
+```
+
 ## Usage
 
 ```go
-// Create client
-client := coinmate.GetCoinmateClient(clientId, apiKey, privateKey)
+package main
 
-// Public endpoints
-ticker := &public.Ticker{Client: client}
-tickerData, err := ticker.GetTicker("BTC_EUR")
+import (
+	"fmt"
+	"log"
 
-// Secure endpoints
-balances := &secure.Balances{Client: client}
-balanceData, err := balances.GetBalances()
+	"github.com/blaskojan/coinmate-api-client/coinmate"
+	"github.com/blaskojan/coinmate-api-client/coinmate/public"
+	"github.com/blaskojan/coinmate-api-client/coinmate/secure"
+)
+
+func main() {
+	// Create client
+	client := coinmate.GetCoinmateClient(clientId, apiKey, privateKey)
+
+	// Public endpoints
+	ticker := &public.Ticker{Client: client}
+	tickerData, err := ticker.GetTicker("BTC_EUR")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Last price: %.2f\n", tickerData.Data.Last)
+
+	// Secure endpoints
+	balances := &secure.Balances{Client: client}
+	balanceData, err := balances.GetBalances()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Currencies: %d\n", len(balanceData.Data))
+}
 ```
 
 ## Authentication
